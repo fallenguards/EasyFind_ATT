@@ -1,0 +1,15 @@
+## Interface: 120105, 16001
+## Title: EasyFind [ATT]
+## Notes: ALL THE THINGS' things in EasyFind's search bar: find one by name, see whether you have it and where it comes from, get directions. Requires ALL THE THINGS.
+## Author: justawower
+## Version: 0.1.0
+## IconTexture: Interface\AddOns\EasyFind\textures\SpyglassMinimap
+## Group: EasyFind
+## Category: UI
+## Dependencies: EasyFind
+## OptionalDeps: AllTheThings
+## SavedVariables: EasyFindATTDB
+## DefaultState: enabled
+
+Locales/enUS.lua
+Things.lua
