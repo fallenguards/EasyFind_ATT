@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  luacheck:
+    name: Luacheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nebularg/actions-luacheck@v1
+        with:
+          files: '.'
+          args: '--no-color -q'
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: '5.4'
+      - name: Things against a stand-in All The Things
+        run: lua tests/Run.lua
+      - name: Load the addon (EasyFind there, missing or too old; All The Things there, missing or without its functions)
+        run: |
+          status=0
+          for mode in normal noapi oldapi noatt notready; do
+            echo "== $mode"
+            lua tests/smoke_test.lua . EasyFind_ATT.toc EasyFind_ATT "$mode" || status=1
+          done
+          exit $status
