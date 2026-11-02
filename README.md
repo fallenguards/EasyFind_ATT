@@ -1,14 +1,23 @@
 # EasyFind: ALL THE THINGS Extension
 
-ALL THE THINGS' things in EasyFind's search bar. Type a mount, pet, toy, title or recipe and the row says whether your account has it and where it comes from. A click asks EasyFind's GPS for directions to the source.
+ALL THE THINGS in EasyFind's search: find its quests by name, and see where a mount, pet, toy or item comes from and whether you have it, on the row and in its tooltip.
 
-Requires ALL THE THINGS and EasyFind.
+## Requirements
 
-## Dependencies
+- EasyFind 4.2.0 or later
+- ALL THE THINGS
 
-- EasyFind, with its extension API (EasyFind.API version 1).
-- ALL THE THINGS, which this addon reads at runtime: its lists of things, its account-wide collection state and where each thing comes from. Nothing of ALL THE THINGS' is copied into this addon.
+Retail, WoW Forever, Mists Classic, TBC Anniversary and Classic Era.
+
+## Features
+
+- ALL THE THINGS' quests in the search, found by name, questline or reward ("shadowmourne" finds its questline). The line under each quest's name says where it is, and its tooltip whether you have done it. Click for directions there, Alt-click to open it in ALL THE THINGS. With the Questie extension on, it lists no quests of its own: its info goes onto the quests Questie shows.
+- On EasyFind's own mount, pet, toy, appearance, item, heirloom, title, achievement, recipe and decor rows, the line under the name says where the thing comes from, such as "ATT: from The Lich King, Icecrown Citadel", when ALL THE THINGS names a creature, place or quest for it.
+- Hover one of those rows: its tooltip says whether you have it and lists each place it comes from, in ALL THE THINGS' words.
+- Right-click it for Open in ALL THE THINGS.
+- In the filter menu, ALL THE THINGS has a switch per kind (quests, mounts, items and the rest): off takes its info off those rows and never hides the rows. Without the Questie extension, its own quest rows also have Hide completed (on at first) and Near me.
+- `@att` (also `@things`) searches only what ALL THE THINGS knows; with nothing typed after it, it lists what is left to get on the map you are on. The ALL THE THINGS button in EasyFind's extensions menu opens it.
 
 ## How it reads ALL THE THINGS
 
-The addon waits for ALL THE THINGS to say it is ready, then looks for the search functions it needs. If one is missing in the installed version, the search turns itself off with one line in chat and nothing else changes. ALL THE THINGS' settings and saved data are never written.
+The extension waits for ALL THE THINGS to say it is ready, then reads its quests, your collection and where each thing comes from. Nothing of ALL THE THINGS' is copied into this addon, and its settings and saved data are never changed. If an ALL THE THINGS version lacks what the extension reads, it adds nothing and says so in one line in chat.
