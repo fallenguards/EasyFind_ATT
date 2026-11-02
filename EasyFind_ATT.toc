@@ -1,13 +1,14 @@
 ## Interface: 120105, 50504, 20506, 11509, 16001
 ## Title: EasyFind [ATT]
-## Notes: ALL THE THINGS' things in EasyFind's search bar: find one by name, see whether you have it and where it comes from, get directions. Requires ALL THE THINGS.
+## Notes: All The Things on EasyFind's results: where a thing comes from, whether you have it, and directions there. Requires All The Things.
 ## Author: justawower
-## Version: 0.1.0
+## Version: 1.0.0
+## X-Curse-Project-ID: 1781435
 ## IconTexture: Interface\AddOns\EasyFind\textures\SpyglassMinimap
 ## Group: EasyFind
 ## Category: UI
 ## Dependencies: EasyFind
-## OptionalDeps: AllTheThings
+## OptionalDeps: AllTheThings, Questie, EasyFind_Questie
 ## SavedVariables: EasyFindATTDB
 ## DefaultState: enabled
 
