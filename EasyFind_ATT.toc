@@ -1,4 +1,4 @@
-## Interface: 120105, 16001
+## Interface: 120105, 50504, 20506, 11509, 16001
 ## Title: EasyFind [ATT]
 ## Notes: ALL THE THINGS' things in EasyFind's search bar: find one by name, see whether you have it and where it comes from, get directions. Requires ALL THE THINGS.
 ## Author: justawower
