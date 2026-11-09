@@ -500,30 +500,15 @@ local function RowsChanged()
     API.RefreshSearchProvider(QUEST_KEY)
 end
 
--- Later passes: name the quests the client had not named.
-local function Retry(gen)
-    if gen ~= S.gen then return end
-    S.retries = S.retries + 1
-    local pending = S.pending
-    S.pending = {}
-    local named = false
-    for i = 1, #pending do
-        local ok, row = xpcall(MakeQuestRow, Trace, pending[i])
-        if ok and row then
-            AddRow(row)
-            named = true
-        elseif ok and row == nil then
-            S.pending[#S.pending + 1] = pending[i]
-        end
-    end
-    if named then RowsChanged() end
-    if #S.pending > 0 and S.retries < RETRIES then C_Timer.After(RETRY_SECONDS, function() Retry(gen) end) end
-end
-
 -- One row per queued quest, a few milliseconds a frame; a newer build
--- ends an older one's chain.
+-- ends an older one's chain. Later passes, on the same budget, name the
+-- quests the client had not named; the rows reach the search once, when
+-- the passes end. Every refresh has EasyFind index all 22,000 quest rows
+-- again in the background and save that index (one per pass hitched
+-- seven times in half a minute, retail 2026-11-09); one per session also
+-- lets the saved index match the next session's rows.
 local function Step(gen)
-    if not S.building or gen ~= S.gen then return end
+    if gen ~= S.gen then return end
     local t0 = debugprofilestop()
     local queue, n, i = S.queue, #S.queue, S.cursor
     while i <= n do
@@ -538,9 +523,17 @@ local function Step(gen)
     end
     S.cursor = i
     if i <= n then return C_Timer.After(0, function() Step(gen) end) end
+    if #S.pending > 0 and S.retries < RETRIES then
+        C_Timer.After(RETRY_SECONDS, function()
+            if gen ~= S.gen then return end
+            S.retries = S.retries + 1
+            S.queue, S.pending, S.cursor = S.pending, {}, 1
+            Step(gen)
+        end)
+        return
+    end
     S.building, S.built = false, true
     RowsChanged()
-    if #S.pending > 0 then C_Timer.After(RETRY_SECONDS, function() Retry(gen) end) end
 end
 
 local function Build()
@@ -870,8 +863,10 @@ else
     Say(L["NOT_READY"])
 end
 
--- For the dev probe (EasyFind_ATTDev): the walks and the row lookup.
+-- For the dev probe (EasyFind_ATTDev): the walks, the row lookup and the
+-- quest row build's steps.
 EasyFindATT = ns
 ns.S, ns.A = S, A
 ns.SourceLine, ns.SourcePath, ns.Where, ns.Decorated, ns.RowThing, ns.MenuRows, ns.MapSet, ns.Build =
     SourceLine, SourcePath, Where, Decorated, RowThing, MenuRows, MapSet, Build
+ns.Hidden, ns.Name, ns.ZoneOf, ns.Keywords, ns.MakeQuestRow = Hidden, Name, ZoneOf, Keywords, MakeQuestRow

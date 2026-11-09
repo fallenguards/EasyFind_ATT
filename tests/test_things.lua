@@ -186,7 +186,8 @@ local function Env()
     CreateVector2D = function(x, y) return { x = x, y = y } end
     CreateFrame = function() return { RegisterEvent = function() end, SetScript = function() end } end
     IsAltKeyDown = function() return world.alt end
-    debugprofilestop = function() return os.clock() * 1000 end
+    world.clock = nil
+    debugprofilestop = function() return world.clock and world.clock() or os.clock() * 1000 end
     debugstack = function() return "" end
     geterrorhandler = function() return function(e) printed[#printed + 1] = "ERR " .. tostring(e) end end
     print = function(...) printed[#printed + 1] = table.concat({ ... }, " ") end
@@ -392,6 +393,67 @@ function tests.an_unnamed_quest_arrives_on_a_later_pass()
     assert(RowNamed(captured.provider.rows(), "Late Quest"), "named on the retry")
 end
 
+-- A refresh has EasyFind index every quest row again (22,000 on retail):
+-- the rows reach the search once, when the passes end.
+function tests.the_quests_reach_the_search_once_when_the_passes_end()
+    Load()
+    local later = { key = "questID", questID = 106, parent = tree.elwynn }
+    CacheField(later, "questID", 106)
+    local before = captured.refreshes or 0
+    QuestRows()
+    assertEq((captured.refreshes or 0) - before, 0, "two quests unnamed after the first pass: no refresh yet")
+    for _ = 1, 2 do FlushTimers(2) end
+    assertEq((captured.refreshes or 0) - before, 0, "nothing named yet: no refresh")
+    tree.unnamed.name = "Late Quest"
+    FlushTimers(2)
+    assertEq((captured.refreshes or 0) - before, 0, "one named, one still pending: the passes go on")
+    later.name = "Later Quest"
+    FlushTimers(2)
+    assertEq((captured.refreshes or 0) - before, 1, "both named: one refresh as the passes end")
+    assert(RowNamed(captured.provider.rows(), "Later Quest"), "the last-named quest is a row")
+    for _ = 1, 3 do FlushTimers(2) end
+    assertEq((captured.refreshes or 0) - before, 1, "no pass runs after the last name")
+end
+
+-- Names that never come end the passes too: the rows reach the search then.
+function tests.quests_the_client_never_names_still_let_the_rest_reach_the_search()
+    Load()
+    local before = captured.refreshes or 0
+    QuestRows()
+    for _ = 1, 5 do FlushTimers(2) end
+    assertEq((captured.refreshes or 0) - before, 0, "passes left: no refresh")
+    FlushTimers(2)
+    assertEq((captured.refreshes or 0) - before, 1, "the last pass over: one refresh")
+    assert(RowNamed(captured.provider.rows(), "The Sacred and the Corrupt"), "the named quests are rows")
+end
+
+-- With every name at hand the first pass is the last: the rows reach the
+-- search at once.
+function tests.all_quests_named_reach_the_search_after_the_first_pass()
+    Load()
+    tree.unnamed.name = "Named Quest"
+    local before = captured.refreshes or 0
+    QuestRows()
+    assertEq((captured.refreshes or 0) - before, 1, "one refresh, no passes to wait for")
+end
+
+-- A later pass over the unnamed quests reads on the first pass's budget,
+-- not all in one frame.
+function tests.a_later_pass_keeps_to_the_frame_budget()
+    Load()
+    CacheField({ key = "questID", questID = 106, parent = tree.elwynn }, "questID", 106)
+    QuestRows()
+    local clock = 0
+    world.clock = function() clock = clock + 5; return clock end
+    local frames, After = 0, C_Timer.After
+    C_Timer.After = function(delay, fn)
+        if delay == 0 then frames = frames + 1 end
+        return After(delay, fn)
+    end
+    FlushTimers(2)
+    assertEq(frames, 1, "two unnamed quests over budget: the pass spills into a second frame")
+end
+
 function tests.a_quest_click_routes_to_it_and_alt_opens_the_host_window()
     Load()
     local P = captured.provider
@@ -493,7 +555,7 @@ function tests.its_own_switches_filter_its_quest_rows()
     Load()
     local P = captured.provider
     QuestRows()
-    local before = captured.refreshes
+    local before = captured.refreshes or 0
     Switch("Hide completed").set(false)
     assertEq(captured.refreshes, before + 1, "a switch hands the rows over again")
     assertEq(EasyFindATTDB.hideCompleted, false, "off is saved")
@@ -539,7 +601,10 @@ function tests.no_quest_is_read_until_the_search_asks()
     assertEq(ns.S.built, false, "nothing built at load")
     assertEq(#captured.provider.rows(), 0, "the first ask starts the build")
     FlushTimers(1)
-    assertEq(ns.S.built, true, "built over the next frames")
+    assertEq(ns.S.built, false, "the first pass over, a name still to come: not handed over yet")
+    assertEq(captured.refreshes, nil, "EasyFind not told before the passes end")
+    for _ = 1, 6 do FlushTimers(2) end
+    assertEq(ns.S.built, true, "built once the passes end")
     assertEq(captured.refreshes, 1, "EasyFind told once the rows are in")
 end
 
