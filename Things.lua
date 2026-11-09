@@ -37,6 +37,7 @@ local MAX_KEYWORDS = 12
 local C_Map, C_Timer, C_MountJournal = C_Map, C_Timer, C_MountJournal
 local sformat, tconcat, tinsert, mhuge, slower = string.format, table.concat, table.insert, math.huge, string.lower
 local IsAltKeyDown, debugprofilestop, debugstack, geterrorhandler = IsAltKeyDown, debugprofilestop, debugstack, geterrorhandler
+local issecretvalue = issecretvalue
 
 -- ATT's functions, bound when it says it is ready; nil until then.
 local A = {}
@@ -121,9 +122,9 @@ local function Bind()
 end
 
 -- Text without color codes, links and textures; nil while the client is
--- still sending it.
+-- still sending it, or when it withholds it (a secret string takes no read).
 local function Plain(s)
-    if type(s) ~= "string" then return nil end
+    if type(s) ~= "string" or (issecretvalue and issecretvalue(s) == true) then return nil end
     s = s:gsub("|T.-|t", ""):gsub("|A.-|a", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
     s = s:match("^%s*(.-)%s*$")
     s = s:match("^%[(.*)%]$") or s

@@ -172,6 +172,8 @@ local function Env()
         return name == "AllTheThings" and AllTheThings ~= nil
     end }
     RETRIEVING_DATA = "Retrieving Data"
+    -- The client's secret strings, stood in for by one word.
+    issecretvalue = function(v) return v == "WITHHELD" end
     EasyFindATTDB = nil
     C_Timer = { After = function(delay, fn) timers[#timers + 1] = { at = world.now + delay, fn = fn } end }
     C_Map = {
@@ -287,6 +289,17 @@ function tests.subtext_names_att_and_a_source_a_player_can_go_to()
     assertEq(d.subtext({ category = "Pet", speciesID = 5 }), "ATT: from Vendor Bob, Elwynn Forest", "a vendor in its zone")
     assertEq(d.applies({ category = "Item", itemID = 2589 }), true, "an item ATT knows")
     assertEq(d.subtext({ category = "Item", itemID = 2589 }), nil, "under a category only: no subtext")
+end
+
+-- A name the client withholds (a secret string, Forever 2026-11-09) is
+-- left unread: the line goes on with the names it can read.
+function tests.a_name_the_client_withholds_is_left_unread()
+    Load()
+    tree.lk.name = "WITHHELD"
+    local d = captured.decorator
+    assertEq(d.subtext(MOUNT_ROW), "ATT: from Icecrown Citadel", "the boss unread, the instance named")
+    tree.icc.name = "WITHHELD"
+    assertEq(d.subtext(MOUNT_ROW), nil, "nothing readable: no line, no error")
 end
 
 function tests.keep_drops_only_what_is_collected()

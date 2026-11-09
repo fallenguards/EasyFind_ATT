@@ -18,7 +18,7 @@ read_globals = {
     "EasyFind", "AllTheThings",
     "C_AddOns", "IsAddOnLoaded", "C_Map", "C_MountJournal", "C_SuperTrack", "C_Timer", "UiMapPoint", "WorldMapFrame",
     "CreateVector2D", "RETRIEVING_DATA", "CreateFrame", "IsAltKeyDown",
-    "debugprofilestop", "debugstack", "geterrorhandler",
+    "debugprofilestop", "debugstack", "geterrorhandler", "issecretvalue",
 }
 
 -- The tests run on the lua in PATH (5.4) and stand in for the game's globals.
