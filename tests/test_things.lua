@@ -354,6 +354,24 @@ function tests.a_quest_with_no_place_routes_to_its_giver()
     assertEq(navigated[1].step, "Travel to Vendor Bob, Elwynn Forest", "step")
 end
 
+-- The giver of a quest still to take: the route's end wears the game's
+-- quest-offer "!" in the GPS; one already taken or done does not.
+function tests.a_quest_still_to_take_ends_on_the_quest_offer_mark()
+    local onQuest, done = false, false
+    C_QuestLog = { IsOnQuest = function() return onQuest end, IsQuestFlaggedCompleted = function() return done end }
+    Load()
+    local P = captured.provider
+    P.select(RowNamed(QuestRows(), "Escort Quest"))
+    assertEq(navigated[1].questMark, "offer")
+    onQuest = true
+    P.select(RowNamed(QuestRows(), "Escort Quest"))
+    assertEq(navigated[2].questMark, nil, "taken: its giver is no offer")
+    onQuest, done = false, true
+    P.select(RowNamed(QuestRows(), "Escort Quest"))
+    assertEq(navigated[3].questMark, nil, "done")
+    C_QuestLog = nil
+end
+
 function tests.quests_easyfind_does_not_list_are_rows_of_its_own()
     Load()
     local P = captured.provider

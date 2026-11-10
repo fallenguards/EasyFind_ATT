@@ -34,7 +34,7 @@ local RETRY_SECONDS = 2
 local REPORTED_ERRORS = 3   -- indexing errors sent to the error frame
 local MAX_KEYWORDS = 12
 
-local C_Map, C_Timer, C_MountJournal = C_Map, C_Timer, C_MountJournal
+local C_Map, C_Timer, C_MountJournal, C_QuestLog = C_Map, C_Timer, C_MountJournal, C_QuestLog
 local sformat, tconcat, tinsert, mhuge, slower = string.format, table.concat, table.insert, math.huge, string.lower
 local IsAltKeyDown, debugprofilestop, debugstack, geterrorhandler = IsAltKeyDown, debugprofilestop, debugstack, geterrorhandler
 local issecretvalue = issecretvalue
@@ -552,8 +552,16 @@ local function QuestGroup(row)
     return S.ready and row.attQuestID and (S.groups[row] or A.Object("questID", row.attQuestID, "key")) or nil
 end
 
+-- Where the quest starts; while it is still to be taken, its end wears the
+-- game's quest-offer "!" in the GPS.
 local function QuestDest(row)
-    return DestFor(Spots("questID", row.id), row.name, row.icon)
+    local dest = DestFor(Spots("questID", row.id), row.name, row.icon)
+    local QL = C_QuestLog
+    if dest and QL and not (QL.IsOnQuest and QL.IsOnQuest(row.id))
+        and not (QL.IsQuestFlaggedCompleted and QL.IsQuestFlaggedCompleted(row.id)) then
+        dest.questMark = "offer"
+    end
+    return dest
 end
 
 -- A click asks for directions to where the quest starts; Alt opens ATT's

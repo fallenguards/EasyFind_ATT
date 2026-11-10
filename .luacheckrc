@@ -16,7 +16,7 @@ globals = {
 -- The game, EasyFind and All The Things (read-only)
 read_globals = {
     "EasyFind", "AllTheThings",
-    "C_AddOns", "IsAddOnLoaded", "C_Map", "C_MountJournal", "C_SuperTrack", "C_Timer", "UiMapPoint", "WorldMapFrame",
+    "C_AddOns", "IsAddOnLoaded", "C_Map", "C_MountJournal", "C_QuestLog", "C_SuperTrack", "C_Timer", "UiMapPoint", "WorldMapFrame",
     "CreateVector2D", "RETRIEVING_DATA", "CreateFrame", "IsAltKeyDown",
     "debugprofilestop", "debugstack", "geterrorhandler", "issecretvalue",
 }
