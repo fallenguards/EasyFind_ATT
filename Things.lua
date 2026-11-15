@@ -749,6 +749,10 @@ API.RegisterExtension({
 RegisterDecorator()
 
 -- The rows EasyFind gets: the built list through the switches.
+-- EasyFind 5.4.0 on: the frame goes while the 22,000 quests are checked
+-- (one 55 ms frame on retail).
+local Checkpoint = API.SliceCheckpoint or function() end
+
 local function Shown()
     local db = DB()
     if db.infoOff.quests then return {} end
@@ -757,6 +761,7 @@ local function Shown()
     local here = mapID and MapSet(mapID)
     local out = {}
     for i = 1, #S.rows do
+        if i % 256 == 0 then Checkpoint() end
         local row = S.rows[i]
         local g = S.groups[row]
         if not (db.hideCompleted and g and Done(g)) and not (db.nearMe and not (here and here[row.k])) then
