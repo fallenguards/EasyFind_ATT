@@ -2,7 +2,7 @@
 ## Title: EasyFind [ATT]
 ## Notes: All The Things on EasyFind's results: where a thing comes from, whether you have it, and directions there. Requires All The Things.
 ## Author: justawower
-## Version: 1.0.1
+## Version: 1.0.2
 ## X-Curse-Project-ID: 1781435
 ## IconTexture: Interface\AddOns\EasyFind\textures\SpyglassMinimap
 ## Group: EasyFind

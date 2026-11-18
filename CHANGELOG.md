@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.2] - 2026-11-18
+
+- No more brief freeze with Hide completed or Near me on: its quests are checked in small pieces, letting the game draw in between (EasyFind 5.4.0 or later).
+
 ## [1.0.1] - 2026-11-13
 
 - With GPS 1.6.0, directions to a quest you can take end on the game's quest button over its giver.
