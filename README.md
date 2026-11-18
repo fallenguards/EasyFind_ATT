@@ -11,7 +11,7 @@ Retail, WoW Forever, Mists Classic, TBC Anniversary and Classic Era.
 
 ## Features
 
-- ALL THE THINGS' quests in the search, found by name, questline or reward ("shadowmourne" finds its questline). The line under each quest's name says where it is, and its tooltip whether you have done it. Click for directions there, Alt-click to open it in ALL THE THINGS. With the Questie extension on, it lists no quests of its own: its info goes onto the quests Questie shows.
+- ALL THE THINGS' quests in the search, found by name, questline or reward ("shadowmourne" finds its questline). The line under each quest's name says where it is, and its tooltip whether you have done it. Click for directions there (with the GPS extension), Alt-click to open it in ALL THE THINGS. With the Questie extension on, it lists no quests of its own: its info goes onto the quests Questie shows.
 - On EasyFind's own mount, pet, toy, appearance, item, heirloom, title, achievement, recipe and decor rows, the line under the name says where the thing comes from, such as "ATT: from The Lich King, Icecrown Citadel", when ALL THE THINGS names a creature, place or quest for it.
 - Hover one of those rows: its tooltip says whether you have it and lists each place it comes from, in ALL THE THINGS' words.
 - Right-click it for Open in ALL THE THINGS.
