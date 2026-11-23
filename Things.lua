@@ -732,45 +732,6 @@ local function RegisterDecorator()
     })
 end
 
--- ==== registration ==========================================================
-
-API.RegisterExtension({
-    id = KEY,
-    name = L["EXT_NAME"],
-    description = L["EXT_DESC"],
-    icon = ICON,
-    keywords = { "att", "allthethings", "collect", "collection" },
-    -- Its button opens @att: what is left to get here.
-    scope = KEY,
-})
-
--- At load, so its button finds the @att scope from login; it takes rows
--- once ATT is ready.
-RegisterDecorator()
-
--- The rows EasyFind gets: the built list through the switches.
--- EasyFind 5.4.0 on: the frame goes while the 22,000 quests are checked
--- (one 55 ms frame on retail).
-local Checkpoint = API.SliceCheckpoint or function() end
-
-local function Shown()
-    local db = DB()
-    if db.infoOff.quests then return {} end
-    if not (db.hideCompleted or db.nearMe) then return S.rows end
-    local mapID = db.nearMe and C_Map.GetBestMapForUnit("player")
-    local here = mapID and MapSet(mapID)
-    local out = {}
-    for i = 1, #S.rows do
-        if i % 256 == 0 then Checkpoint() end
-        local row = S.rows[i]
-        local g = S.groups[row]
-        if not (db.hideCompleted and g and Done(g)) and not (db.nearMe and not (here and here[row.k])) then
-            out[#out + 1] = row
-        end
-    end
-    return out
-end
-
 local function Option(key, label)
     return {
         label = label,
@@ -806,6 +767,67 @@ local function Options()
         out[#out + 1] = { header = L["OPT_QUESTS_HEADER"] }
         out[#out + 1] = Option("hideCompleted", L["OPT_HIDE_COMPLETED"])
         out[#out + 1] = Option("nearMe", L["OPT_NEAR_ME"])
+    end
+    return out
+end
+
+-- ==== registration ==========================================================
+
+API.RegisterExtension({
+    id = KEY,
+    name = L["EXT_NAME"],
+    description = L["EXT_DESC"],
+    icon = ICON,
+    keywords = { "att", "allthethings", "collect", "collection" },
+    -- Its button opens @att: what is left to get here.
+    scope = KEY,
+    -- Its page in the settings window: the switches its filter row holds.
+    settings = function(page, kit)
+        local below = kit.Title(page, L["EXT_NAME"])
+        for _, opt in ipairs(Options()) do
+            local control
+            if opt.header then
+                control = page:CreateFontString(nil, "OVERLAY", kit.Font("GameFontNormal"))
+                control:SetText(opt.header)
+                control:SetPoint("TOPLEFT", below, "BOTTOMLEFT", 0, -12)
+            else
+                control = kit.Checkbox(page, opt.label, opt.get, opt.set, opt.tooltip)
+                control:SetPoint("TOPLEFT", below, "BOTTOMLEFT", 0, -4)
+            end
+            below = control
+        end
+    end,
+    resetSettings = function()
+        local db = DB()
+        db.infoOff, db.hideCompleted, db.nearMe = {}, true, nil
+        API.RefreshRowDecorations()
+        RowsChanged()
+    end,
+})
+
+-- At load, so its button finds the @att scope from login; it takes rows
+-- once ATT is ready.
+RegisterDecorator()
+
+-- The rows EasyFind gets: the built list through the switches.
+-- EasyFind 5.4.0 on: the frame goes while the 22,000 quests are checked
+-- (one 55 ms frame on retail).
+local Checkpoint = API.SliceCheckpoint or function() end
+
+local function Shown()
+    local db = DB()
+    if db.infoOff.quests then return {} end
+    if not (db.hideCompleted or db.nearMe) then return S.rows end
+    local mapID = db.nearMe and C_Map.GetBestMapForUnit("player")
+    local here = mapID and MapSet(mapID)
+    local out = {}
+    for i = 1, #S.rows do
+        if i % 256 == 0 then Checkpoint() end
+        local row = S.rows[i]
+        local g = S.groups[row]
+        if not (db.hideCompleted and g and Done(g)) and not (db.nearMe and not (here and here[row.k])) then
+            out[#out + 1] = row
+        end
     end
     return out
 end

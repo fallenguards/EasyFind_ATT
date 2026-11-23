@@ -258,6 +258,35 @@ function tests.decorator_registers_at_load_and_takes_rows_once_ready()
     assert((captured.decorRefreshes or 0) >= 1, "rows asked again once ready")
 end
 
+-- Its settings page holds the switches its filter row holds, so neither
+-- place has one the other lacks (2026-11-23: it had no page at all).
+function tests.its_settings_page_shows_every_filter_switch()
+    Load()
+    local made = {}
+    local function Region(kind, text)
+        local r = { kind = kind, text = text }
+        function r:SetPoint() end
+        function r:SetText(t) self.text = t end
+        made[#made + 1] = r
+        return r
+    end
+    local page = { CreateFontString = function() return Region("header") end }
+    local kit = {
+        Font = function(name) return name end,
+        Title = function() return Region("title") end,
+        Checkbox = function(_, label) return Region("switch", label) end,
+    }
+    captured.extension.settings(page, kit)
+    local want = {}
+    for _, o in ipairs(captured.provider.options) do
+        want[#want + 1] = (o.header and "header " .. o.header) or ("switch " .. o.label)
+    end
+    local got = {}
+    for i = 2, #made do got[#got + 1] = made[i].kind .. " " .. made[i].text end
+    assertEq(table.concat(got, " | "), table.concat(want, " | "), "the page lists the filter row's switches in order")
+    assert(captured.extension.resetSettings, "and resets them")
+end
+
 function tests.its_button_opens_the_att_scope()
     Load()
     assertEq(captured.extension.scope, "att", "the extension's scope")
