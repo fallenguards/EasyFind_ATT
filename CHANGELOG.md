@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.0] - 2026-11-23
+
+- A settings page under Settings > Extensions with the same switches as its row in the filter menu: which rows show its info, and Hide completed and Near me for its quests. Reset to default puts them back.
+- Marked up to date for WoW 12.1.7, so the game no longer lists it as out of date there.
+
 ## [1.0.2] - 2026-11-18
 
 - No more brief freeze with Hide completed or Near me on: its quests are checked in small pieces, letting the game draw in between (EasyFind 5.4.0 or later).
